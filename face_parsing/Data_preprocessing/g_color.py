@@ -7,7 +7,7 @@ color_list = [[0, 0, 0], [204, 0, 0], [76, 153, 0], [204, 204, 0], [51, 51, 255]
 
 folder_base = 'CelebAMask-HQ-mask'
 folder_save = 'CelebAMask-HQ-mask-color'
-img_num = 10
+img_num = 1#10
 
 make_folder(folder_save)
 
@@ -17,7 +17,7 @@ for k in range(img_num):
 		im_base = np.zeros((512, 512, 3))
 		im = Image.open(filename)
 		im = np.array(im)
-		im = im[:, :, 0]
+		#im = im[:, :, 0]
 		for idx, color in enumerate(color_list):
 			im_base[im == idx] = color
 	filename_save = os.path.join(folder_save, str(k) + '.png')
