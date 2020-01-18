@@ -14,14 +14,14 @@ import matplotlib.pyplot as plt
 label_list = ['skin', 'nose', 'eye_g', 'l_eye', 'r_eye', 'l_brow', 'r_brow', 'l_ear', 'r_ear', 'mouth', 'u_lip', 'l_lip', 'hair', 'hat',  'neck', 'cloth']
 
 folder_base = 'CelebAMask-HQ-mask-anno'
-folder_save = 'CelebAMask-HQ-mask'
+folder_save = 'CelebAMask-HQ-mask-face-seg'
 img_num = 30000
 folder_raw = 'CelebA-HQ-img'
 raw_save = 'CelebA-HA-img-resize'
 make_folder(folder_save)
 make_folder(raw_save)
 
-image_id_list = open(os.path.join('.', 'train.lst'), 'w')
+image_id_list = open(os.path.join('.', 'train_face_seg.lst'), 'w')
 
 for k in range(img_num):
 	folder_num = k // 2000

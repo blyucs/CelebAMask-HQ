@@ -14,14 +14,14 @@ import matplotlib.pyplot as plt
 label_list = ['skin', 'nose', 'eye_g', 'l_eye', 'r_eye', 'l_brow', 'r_brow', 'l_ear', 'r_ear', 'mouth', 'u_lip', 'l_lip', 'hair', 'hat',  'neck', 'cloth']
 
 folder_base = 'CelebAMask-HQ-mask-anno'
-folder_save = 'CelebAMask-HQ-mask'
+folder_save = 'CelebAMask-HQ-mask-binary'
 img_num = 30000
 folder_raw = 'CelebA-HQ-img'
 raw_save = 'CelebA-HA-img-resize'
 make_folder(folder_save)
-make_folder(raw_save)
+#make_folder(raw_save)
 
-image_id_list = open(os.path.join('.', 'train.lst'), 'w')
+image_id_list = open(os.path.join('.', 'train_binary.lst'), 'w')
 
 for k in range(img_num):
 	folder_num = k // 2000
@@ -32,7 +32,8 @@ for k in range(img_num):
 			#print (label, idx+1)
 			im = cv2.imread(filename)
 			im = im[:, :, 0]
-			im_base[im != 0] = (idx + 1)
+			#im_base[im != 0] = (idx + 1)
+			im_base[im != 0] = 1 #force all the class except bg to be 1
 	filename_save = os.path.join(folder_save, str(k) + '.png')
 	print (filename_save)
 	cv2.imwrite(filename_save, im_base)
@@ -49,9 +50,9 @@ for k in range(img_num):
 		image_id_list.write(list_str+ '\n')
 
 # # Show image with segmentations
-# fig, ax = plt.subplots(figsize=[10,10])
-#
-# fplot = ax.imshow(plt.imread(raw_save+'/'+'1.jpg'))
-# splot = ax.imshow(plt.imread(folder_save+'/'+'1.png'), alpha=0.7)  # X*Y*10 imshow auto expand 0-10 to specific color
-# # ax.imshow(segs[i%l+2],alpha=0.7)
-# plt.show()
+fig, ax = plt.subplots(figsize=[10,10])
+
+fplot = ax.imshow(plt.imread(raw_save+'/'+'0.jpg'))
+splot = ax.imshow(plt.imread(folder_save+'/'+'0.png'), alpha=0.7)  # X*Y*10 imshow auto expand 0-10 to specific color
+# ax.imshow(segs[i%l+2],alpha=0.7)
+plt.show()
