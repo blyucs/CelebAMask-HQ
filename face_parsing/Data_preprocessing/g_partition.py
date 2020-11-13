@@ -5,8 +5,10 @@ from shutil import copyfile
 from utils import make_folder
 
 #### source data path
-s_label = 'CelebAMask-HQ-label'
-s_img = 'CelebA-HQ-img'
+# s_label = 'CelebAMask-HQ-label'
+s_label = 'CelebAMaskHQ-mask'
+# s_img = 'CelebA-HQ-img'
+s_img = 'CelebAMask-HQ/CelebA-HQ-img'
 #### destination training data path
 d_train_label = 'train_label'
 d_train_img = 'train_img'
@@ -35,20 +37,28 @@ f_train = open('train_list.txt', 'w')
 f_val = open('val_list.txt', 'w')
 f_test = open('test_list.txt', 'w')
 
+raw_img_dir = 'CelebA-HA-img-resize'
+folder_save = 'CelebAMask-HQ-mask-all-class'
 for idx, x in enumerate(image_list.loc[:, 1]):
     print (idx, x)
     if x >= 162771 and x < 182638:
         copyfile(os.path.join(s_label, str(idx)+'.png'), os.path.join(d_val_label, str(val_count)+'.png'))
-        copyfile(os.path.join(s_img, str(idx)+'.jpg'), os.path.join(d_val_img, str(val_count)+'.jpg'))        
+        copyfile(os.path.join(s_img, str(idx)+'.jpg'), os.path.join(d_val_img, str(val_count)+'.jpg'))
+        # list_str = raw_img_dir + '/' + str(idx)+'.jpg' + '\t' + folder_save + '/' + str(idx) + '.png' + '\t' + folder_save + '/' + str(idx) + '.png' + '\n'
+        # f_val.write(list_str)
         val_count += 1
 
     elif x >= 182638:
         copyfile(os.path.join(s_label, str(idx)+'.png'), os.path.join(d_test_label, str(test_count)+'.png'))
         copyfile(os.path.join(s_img, str(idx)+'.jpg'), os.path.join(d_test_img, str(test_count)+'.jpg'))
+        # list_str = raw_img_dir + '/' + str(idx)+'.jpg' + '\t' + folder_save + '/' + str(idx) + '.png' + '\t' + folder_save + '/' + str(idx) + '.png' + '\n'
+        # f_test.write(list_str)
         test_count += 1 
     else:
         copyfile(os.path.join(s_label, str(idx)+'.png'), os.path.join(d_train_label, str(train_count)+'.png'))
         copyfile(os.path.join(s_img, str(idx)+'.jpg'), os.path.join(d_train_img, str(train_count)+'.jpg'))
+        # list_str = raw_img_dir + '/' + str(idx)+'.jpg' + '\t' + folder_save + '/' + str(idx) + '.png' + '\t' + folder_save + '/' + str(idx) + '.png' + '\n'
+        # f_train.write(list_str)
         train_count += 1  
 
 print (train_count + test_count + val_count)

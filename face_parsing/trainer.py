@@ -95,8 +95,7 @@ class Trainer(object):
             labels_real = labels_real.scatter_(1, labels.data.long().cuda(), 1.0)
 
             imgs = imgs.cuda()
-            # ================== Train G and gumbel ================== #
-            # Create random noise
+            # ================== Train G =================== #
             labels_predict = self.G(imgs)
                        
             # Calculate cross entropy loss
@@ -115,18 +114,18 @@ class Trainer(object):
             label_batch_predict = generate_label(labels_predict, self.imsize)
             label_batch_real = generate_label(labels_real, self.imsize)
 
-	    # scalr info on tensorboardX		
+            # scalr info on tensorboardX
             writer.add_scalar('Loss/Cross_entrophy_loss', c_loss.data, step) 
 
-	    # image infor on tensorboardX
-	    img_combine = imgs[0]
-	    real_combine = label_batch_real[0]
-	    predict_combine = label_batch_predict[0]
-	    for i in range(1, self.batch_size):
-	        img_combine = torch.cat([img_combine, imgs[i]], 2)
-	        real_combine = torch.cat([real_combine, label_batch_real[i]], 2)
-	        predict_combine = torch.cat([predict_combine, label_batch_predict[i]], 2)
-	    writer.add_image('imresult/img', (img_combine.data + 1) / 2.0, step)
+            # image infor on tensorboardX
+            img_combine = imgs[0]
+            real_combine = label_batch_real[0]
+            predict_combine = label_batch_predict[0]
+            for i in range(1, self.batch_size):
+                img_combine = torch.cat([img_combine, imgs[i]], 2)
+                real_combine = torch.cat([real_combine, label_batch_real[i]], 2)
+                predict_combine = torch.cat([predict_combine, label_batch_predict[i]], 2)
+            writer.add_image('imresult/img', (img_combine.data + 1) / 2.0, step)
             writer.add_image('imresult/real', real_combine, step)
             writer.add_image('imresult/predict', predict_combine, step)
 

@@ -15,7 +15,8 @@ import PIL
 from unet import unet
 from utils import *
 from PIL import Image
-
+from thop import profile
+from thop import clever_format
 def transformer(resize, totensor, normalize, centercrop, imsize):
     options = []
     if centercrop:
@@ -50,7 +51,6 @@ class Tester(object):
 
         # Model hyper-parameters
         self.imsize = config.imsize
-        self.g_num = config.g_num
         self.parallel = config.parallel
 
         self.total_step = config.total_step
@@ -78,7 +78,7 @@ class Tester(object):
         self.model_save_path = os.path.join(config.model_save_path, self.version)
         self.test_label_path = config.test_label_path
         self.test_color_label_path = config.test_color_label_path
-	self.test_image_path = config.test_image_path
+        self.test_image_path = config.test_image_path
 
         # Test size and model
         self.test_size = config.test_size
@@ -91,10 +91,11 @@ class Tester(object):
         test_paths = make_dataset(self.test_image_path)
         make_folder(self.test_label_path, '')
         make_folder(self.test_color_label_path, '') 
+        print(self.model_save_path, self.model_name)
         self.G.load_state_dict(torch.load(os.path.join(self.model_save_path, self.model_name)))
         self.G.eval() 
         batch_num = int(self.test_size / self.batch_size)
-	
+
         for i in range(batch_num):
             print (i)
             imgs = []
@@ -102,15 +103,22 @@ class Tester(object):
                 path = test_paths[i * self.batch_size + j]
                 img = transform(Image.open(path))
                 imgs.append(img)
+                imgs = torch.stack(imgs)
+                imgs = imgs.cuda()
+                flops, params = profile(self.G, inputs=(imgs,),)
+                flops, params = clever_format([flops, params], "%.3f")
+                print(flops)
+                print(params)
+                return
             imgs = torch.stack(imgs) 
             imgs = imgs.cuda()
-            labels_predict = self.G(imgs)
-            labels_predict_plain = generate_label_plain(labels_predict)
-	    labels_predict_color = generate_label(labels_predict)	
+            # labels_predict = self.G(imgs)
+            labels_predict_plain = generate_label_plain(labels_predict,self.imsize)
+            labels_predict_color = generate_label(labels_predict,self.imsize)
             for k in range(self.batch_size):
                 cv2.imwrite(os.path.join(self.test_label_path, str(i * self.batch_size + k) +'.png'), labels_predict_plain[k])
-	        save_image(labels_predict_color[k], os.path.join(self.test_color_label_path, str(i * self.batch_size + k) +'.png'))
-	
+                save_image(labels_predict_color[k], os.path.join(self.test_color_label_path, str(i * self.batch_size + k) +'.png'))
+
     def build_model(self):
         self.G = unet().cuda()
         if self.parallel:
